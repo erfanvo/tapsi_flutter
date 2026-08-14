@@ -74,7 +74,7 @@ class _DashboardPageState extends State<DashboardPage> {
             future: _profileFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const ListView(
+                return ListView(
                   physics: AlwaysScrollableScrollPhysics(),
                   children: [
                     SizedBox(
@@ -106,7 +106,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     OutlinedButton.icon(
                       onPressed: _refresh,
                       icon: const Icon(Icons.refresh_rounded),
-                      label: const Text('تلاش دوباره'),
+                      label: const Text('تل��ش دوباره'),
                     ),
                   ],
                 );
