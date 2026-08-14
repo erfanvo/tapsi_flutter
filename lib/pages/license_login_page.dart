@@ -129,10 +129,10 @@ class _LicenseLoginPageState extends State<LicenseLoginPage> {
                         textInputAction: TextInputAction.done,
                         enabled: !_isLoading,
                         textCapitalization: TextCapitalization.characters,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'License Key',
-                          hintText: 'TAPSI-XXXX-XXXX',
-                          prefixIcon: Icon(Icons.key_rounded),
+                          hintText: 'TAPSI-XXXX-XXXX یا TAPSI-XXXXXXXX-XXXXXXXX',
+                          prefixIcon: const Icon(Icons.key_rounded),
                         ),
                         onFieldSubmitted: (_) => _submit(),
                         validator: (value) {
@@ -140,9 +140,10 @@ class _LicenseLoginPageState extends State<LicenseLoginPage> {
                           if (license.isEmpty) {
                             return 'لایسنس را وارد کنید.';
                           }
-                          if (!RegExp(r'^TAPSI-[A-Z0-9]{4}-[A-Z0-9]{4}$')
+                          // قبول کردن هر دو حالت: TAPSI-XXXX-XXXX یا TAPSI-XXXXXXXX-XXXXXXXX
+                          if (!RegExp(r'^TAPSI-(?:[A-Z0-9]{4}-[A-Z0-9]{4}|[A-Z0-9]{8}-[A-Z0-9]{8})$')
                               .hasMatch(license)) {
-                            return 'فرمت لایسنس باید TAPSI-XXXX-XXXX باشد.';
+                            return 'فرمت لایسنس باید TAPSI-XXXX-XXXX یا TAPSI-XXXXXXXX-XXXXXXXX باشد.';
                           }
                           return null;
                         },
