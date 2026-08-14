@@ -1,0 +1,57 @@
+name: Build Tapsi Android APK
+
+on:
+  push:
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: tapsi_flutter
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create Android host files if needed
+        run: |
+          if [ ! -d android ]; then
+            flutter create . --platforms=android --project-name=tapsi_client
+          fi
+
+      - name: Allow Android network access
+        run: |
+          manifest="android/app/src/main/AndroidManifest.xml"
+
+          if ! grep -q 'android.permission.INTERNET' "$manifest"; then
+            sed -i '/<application/i\    <uses-permission android:name="android.permission.INTERNET" />' "$manifest"
+          fi
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: tapsi-client-release-apk
+          path: tapsi_flutter/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
