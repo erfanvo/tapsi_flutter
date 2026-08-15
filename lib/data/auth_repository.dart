@@ -24,7 +24,25 @@ class AuthRepository {
     }
 
     final data = _asMap(body['data']);
-    final cookies = data['cookies']?.toString().trim() ?? '';
+
+    // 1) تلاش اول: کوکی از بدنه JSON
+    var cookies = data['cookies']?.toString().trim() ?? '';
+
+    // 2) اگر در بدنه نبود، تلاش برای استخراج از header Set-Cookie
+    if (cookies.isEmpty) {
+      final List<String>? setCookieHeaders = response.headers['set-cookie'];
+      if (setCookieHeaders != null && setCookieHeaders.isNotEmpty) {
+        final cookiePairs = setCookieHeaders.map((s) {
+          final parts = s.split(';');
+          return parts.isNotEmpty ? parts.first.trim() : s.trim();
+        }).where((s) => s.isNotEmpty).toList();
+
+        if (cookiePairs.isNotEmpty) {
+          cookies = cookiePairs.join('; ');
+        }
+      }
+    }
+
     if (cookies.isEmpty) {
       throw const AuthException('نشست معتبری از سرویس لایسنس دریافت نشد.');
     }
